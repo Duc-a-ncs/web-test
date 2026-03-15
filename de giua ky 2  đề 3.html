@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ôn thi cuối học kỳ 2 Toán 12 - Đề 3</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            startup: {
+                pageReady: () => {
+                    return MathJax.startup.defaultPageReady();
+                }
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; }
+        .math-table td, .math-table th { border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; }
+        .correct-text { text-decoration: underline; font-weight: bold; color: #16a34a; }
+        .wrong-text { color: #dc2626; text-decoration: line-through; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- DATA DE 3 ---
+        const part1Data = [
+            {
+                id: 1,
+                question: "Mệnh đề nào sau đây sai?",
+                options: [
+                    "A. $\\int \\frac{1}{x}dx = \\ln|x| + C.$", 
+                    "B. $\\int e^{x}dx = e^{x} + C.$", 
+                    "C. $\\int xdx = \\frac{x^2+1}{2} + C.$", 
+                    "D. $\\int \\sin x dx = \\cos x + C.$"
+                ],
+                correct: 3,
+                solution: "Mệnh đề D sai vì nguyên hàm của $\\sin x$ là $-\\cos x + C$. (Lưu ý: Đáp án C có thể viết lại là $\\frac{x^2}{2} + \\frac{1}{2} + C$, bản chất vẫn là $\\frac{x^2}{2} + C'$ nên đúng)."
+            },
+            {
+                id: 2,
+                question: "Cho hàm số $y=f(x)$ có đạo hàm liên tục trên $[-1;2]$, $f(-1)=8$; $f(2)=-1$. Tích phân $\\int_{-1}^{2}f^{\\prime}(x)dx$ bằng",
+                options: ["A. $1$", "B. $7$", "C. $-9$", "D. $9$"],
+                correct: 2,
+                solution: "Ta có $\\int_{-1}^{2}f'(x)dx = f(2) - f(-1) = -1 - 8 = -9$."
+            },
+            {
+                id: 3,
+                question: "Cho hàm số $f(x)$ có bảng biến thiên như sau:<br/>" +
+                    "<div class='mt-4 mb-4 overflow-x-auto'><table class='w-full max-w-2xl mx-auto border-collapse border border-gray-800 text-center'>" +
+                    "<tbody>" +
+                    "<tr class='border-b border-gray-800'>" +
+                    "<td class='border-r border-gray-800 px-3 py-2 font-semibold bg-gray-50 w-16'>$x$</td>" +
+                    "<td class='px-2 py-2'>$-\\infty$</td>" +
+                    "<td class='px-2 py-2'></td>" +
+                    "<td class='px-2 py-2'>$-1$</td>" +
+                    "<td class='px-2 py-2'></td>" +
+                    "<td class='px-2 py-2'>$1$</td>" +
+                    "<td class='px-2 py-2'></td>" +
+                    "<td class='px-2 py-2'>$+\\infty$</td>" +
+                    "</tr>" +
+                    "<tr class='border-b border-gray-800'>" +
+                    "<td class='border-r border-gray-800 px-3 py-2 font-semibold bg-gray-50'>$f'(x)$</td>" +
+                    "<td class='px-2 py-2'></td>" +
+                    "<td class='px-2 py-2'>$-$</td>" +
+                    "<td class='px-2 py-2'>$0$</td>" +
+                    "<td class='px-2 py-2'>$+$</td>" +
+                    "<td class='px-2 py-2'>$0$</td>" +
+                    "<td class='px-2 py-2'>$-$</td>" +
+                    "<td class='px-2 py-2'></td>" +
+                    "</tr>" +
+                    "<tr>" +
+                    "<td class='border-r border-gray-800 px-3 py-2 font-semibold bg-gray-50 align-middle'>$f(x)$</td>" +
+                    "<td colspan='7' class='p-0 relative h-28'>" +
+                    "<div class='absolute w-full h-full left-0 top-0 text-base'>" +
+                    "<div class='absolute top-2 left-[10%]'>$+\\infty$</div>" +
+                    "<div class='absolute bottom-2 left-[38%] -translate-x-1/2'>$0$</div>" +
+                    "<div class='absolute top-2 left-[62%] -translate-x-1/2'>$4$</div>" +
+                    "<div class='absolute bottom-2 right-[10%]'>$-\\infty$</div>" +
+                    "<svg class='absolute top-0 left-0 w-full h-full pointer-events-none' preserveAspectRatio='none'>" +
+                    "<defs><marker id='arrow-q3' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M 0 0 L 10 5 L 0 10 z' fill='currentColor'/></marker></defs>" +
+                    "<line x1='15%' y1='25%' x2='35%' y2='80%' stroke='currentColor' stroke-width='1.5' marker-end='url(#arrow-q3)'/>" +
+                    "<line x1='41%' y1='80%' x2='59%' y2='25%' stroke='currentColor' stroke-width='1.5' marker-end='url(#arrow-q3)'/>" +
+                    "<line x1='65%' y1='25%' x2='85%' y2='80%' stroke='currentColor' stroke-width='1.5' marker-end='url(#arrow-q3)'/>" +
+                    "</svg>" +
+                    "</div>" +
+                    "</td>" +
+                    "</tr>" +
+                    "</tbody>" +
+                    "</table></div>" +
+                    "Hàm số đã cho đạt cực tiểu tại",
+                options: ["A. $x=0$", "B. $x=-1$", "C. $x=1$", "D. $x=4$"],
+                correct: 1,
+                solution: "Dựa vào bảng biến thiên, đạo hàm đổi dấu từ âm sang dương tại $x = -1$. Vậy hàm số đạt cực tiểu tại $x = -1$."
+            },
+            {
+                id: 4,
+                question: "Giá trị nhỏ nhất của hàm số $y=x^3-3x^2+2$ trên đoạn $[0;3]$ bằng",
+                options: ["A. $0$", "B. $-4$", "C. $-2$", "D. $2$"],
+                correct: 2,
+                solution: "Ta có $y' = 3x^2 - 6x = 0 \\Leftrightarrow x=0 \\in [0;3]$ hoặc $x=2 \\in [0;3]$.<br/>Tính các giá trị: $y(0)=2$, $y(2)=8-12+2=-2$, $y(3)=27-27+2=2$.<br/>Vậy $\\min_{[0;3]} y = -2$."
+            },
+            {
+                id: 5,
+                question: "Cho hàm số $y=f(x)$ có bảng biến thiên như sau:<br/>" +
+                    "<div class='mt-4 mb-4 overflow-x-auto'><table class='w-full max-w-2xl mx-auto border-collapse border border-gray-800 text-center'>" +
+                    "<tbody>" +
+                    "<tr class='border-b border-gray-800'>" +
+                    "<td class='border-r border-gray-800 px-3 py-2 font-semibold bg-gray-50 w-16'>$x$</td>" +
+                    "<td class='px-2 py-2 w-20'>$-\\infty$</td>" +
+                    "<td class='px-2 py-2'></td>" +
+                    "<td class='px-2 py-2 w-12'>$-2$</td>" +
+                    "<td class='px-2 py-2'></td>" +
+                    "<td class='px-2 py-2 w-20'>$+\\infty$</td>" +
+                    "</tr>" +
+                    "<tr class='border-b border-gray-800'>" +
+                    "<td class='border-r border-gray-800 px-3 py-2 font-semibold bg-gray-50'>$f'(x)$</td>" +
+                    "<td colspan='2' class='px-2 py-2'>$+$</td>" +
+                    "<td class='p-0 relative w-12'><div class='absolute left-[40%] top-0 bottom-0 w-[2px] bg-gray-800'></div><div class='absolute right-[40%] top-0 bottom-0 w-[2px] bg-gray-800'></div></td>" +
+                    "<td colspan='2' class='px-2 py-2'>$+$</td>" +
+                    "</tr>" +
+                    "<tr>" +
+                    "<td class='border-r border-gray-800 px-3 py-2 font-semibold bg-gray-50 align-middle'>$f(x)$</td>" +
+                    "<td colspan='2' class='p-0 relative h-28'>" +
+                    "<div class='absolute bottom-2 left-[15%]'>$2$</div>" +
+                    "<div class='absolute top-2 right-4'>$+\\infty$</div>" +
+                    "<svg class='absolute top-0 left-0 w-full h-full pointer-events-none' preserveAspectRatio='none'>" +
+                    "<defs><marker id='arrow-q5' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M 0 0 L 10 5 L 0 10 z' fill='currentColor'/></marker></defs>" +
+                    "<line x1='25%' y1='80%' x2='80%' y2='25%' stroke='currentColor' stroke-width='1.5' marker-end='url(#arrow-q5)'/>" +
+                    "</svg>" +
+                    "</td>" +
+                    "<td class='p-0 relative w-12'><div class='absolute left-[40%] top-0 bottom-0 w-[2px] bg-gray-800'></div><div class='absolute right-[40%] top-0 bottom-0 w-[2px] bg-gray-800'></div></td>" +
+                    "<td colspan='2' class='p-0 relative h-28'>" +
+                    "<div class='absolute bottom-2 left-4'>$-\\infty$</div>" +
+                    "<div class='absolute top-2 right-[15%]'>$2$</div>" +
+                    "<svg class='absolute top-0 left-0 w-full h-full pointer-events-none' preserveAspectRatio='none'>" +
+                    "<line x1='20%' y1='80%' x2='75%' y2='25%' stroke='currentColor' stroke-width='1.5' marker-end='url(#arrow-q5)'/>" +
+                    "</svg>" +
+                    "</td>" +
+                    "</tr>" +
+                    "</tbody>" +
+                    "</table></div>" +
+                    "Đường tiệm cận ngang của đồ thị hàm số có phương trình là",
+                options: ["A. $x=2$", "B. $y=2$", "C. $y=-2$", "D. $x=-2$"],
+                correct: 1,
+                solution: "Dựa vào bảng biến thiên, ta thấy $\\lim_{x\\to -\\infty} f(x) = 2$ và $\\lim_{x\\to +\\infty} f(x) = 2$. Vậy đường tiệm cận ngang có phương trình $y=2$."
+            },
+            {
+                id: 6,
+                question: "Trong không gian $Oxyz$, cho mặt phẳng $(P): x-3z+1=0$. Một vectơ pháp tuyến của mặt phẳng $(P)$ có tọa độ là",
+                options: ["A. $(1;-3;1)$", "B. $(1;0;-3)$", "C. $(-1;3;1)$", "D. $(-1;0;-3)$"],
+                correct: 1,
+                solution: "Hệ số của $x, y, z$ trong phương trình mặt phẳng chính là tọa độ của VTPT: $\\vec{n}=(1;0;-3)$."
+            },
+            {
+                id: 7,
+                question: "Cho hàm số $y=f(x)$ liên tục trên $[a;b]$. Gọi $D$ là hình phẳng giới hạn bởi đồ thị hàm số $y=f(x)$, trục hoành và các đường thẳng $x=a$, $x=b(a<b)$. Diện tích của $D$ được cho bởi công thức nào sau đây?",
+                options: [
+                    "A. $S=\\pi\\int_{a}^{b}f^2(x)dx$", 
+                    "B. $S=\\int_{a}^{b}|f(x)|dx$", 
+                    "C. $S=\\int_{b}^{a}f(x)dx$", 
+                    "D. $S=\\int_{a}^{b}f(x)dx$"
+                ],
+                correct: 1,
+                solution: "Công thức tính diện tích hình phẳng: $S = \\int_{a}^{b} |f(x)|dx$."
+            },
+            {
+                id: 8,
+                question: "Thể tích của khối tròn xoay khi quay hình phẳng được giới hạn bởi đồ thị hàm số $y=2x-1$, $y=0$, $x=0$, $x=3$ quanh trục hoành bằng",
+                options: ["A. $21$", "B. $6\\pi$", "C. $6$", "D. $21\\pi$"],
+                correct: 3,
+                solution: "Thể tích $V = \\pi \\int_{0}^{3} (2x-1)^2 dx = \\pi \\int_{0}^{3} (4x^2-4x+1) dx = \\pi \\left[\\frac{4x^3}{3} - 2x^2 + x\\right]_{0}^{3} = \\pi(36 - 18 + 3) = 21\\pi$."
+            },
+            {
+                id: 9,
+                question: "Đồ thị trong hình bên dưới là đồ thị của hàm số nào?<br/>" +
+                    "<div class='w-full flex justify-center mt-4 mb-4'>" +
+                    "<svg width='250' height='250' viewBox='0 0 200 200'>" +
+                    "<defs><marker id='arrow-graph' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M 0 0 L 10 5 L 0 10 z' fill='black'/></marker></defs>" +
+                    "<line x1='0' y1='100' x2='200' y2='100' stroke='black' marker-end='url(#arrow-graph)'/>" +
+                    "<line x1='100' y1='200' x2='100' y2='0' stroke='black' marker-end='url(#arrow-graph)'/>" +
+                    "<line x1='75' y1='0' x2='75' y2='200' stroke='gray' stroke-dasharray='4'/>" +
+                    "<line x1='0' y1='200' x2='200' y2='0' stroke='gray' stroke-dasharray='4'/>" +
+                    "<text x='185' y='115' font-style='italic'>x</text>" +
+                    "<text x='85' y='15' font-style='italic'>y</text>" +
+                    "<text x='105' y='115' font-style='italic'>O</text>" +
+                    "<text x='80' y='85'>1</text>" +
+                    "<text x='50' y='115'>-1</text>" +
+                    "<text x='25' y='115'>-2</text>" +
+                    "<text x='105' y='175'>-3</text>" +
+                    "<line x1='50' y1='100' x2='50' y2='175' stroke='gray' stroke-dasharray='3'/>" +
+                    "<line x1='100' y1='175' x2='50' y2='175' stroke='gray' stroke-dasharray='3'/>" +
+                    "<path d='M 80 -5 C 84 70, 92 75, 100 75 C 115 75, 160 30, 200 -5' fill='none' stroke='black' stroke-width='1.5' />" +
+                    "<path d='M 0 208 C 20 190, 35 175, 50 175 C 58 175, 66 180, 70 255' fill='none' stroke='black' stroke-width='1.5' />" +
+                    "</svg></div>",
+                options: [
+                    "A. $y=x-\\frac{1}{x+1}$", 
+                    "B. $y=\\frac{2x+1}{x+1}$", 
+                    "C. $y=\\frac{x^2-x+1}{x+1}$", 
+                    "D. $y=\\frac{x^2+x+1}{x+1}$"
+                ],
+                correct: 3,
+                solution: "Dựa vào đồ thị ta thấy: TCĐ là $x=-1$, TCX là $y=x$. Hơn nữa đồ thị đi qua điểm $(0;1)$ và đạt cực đại tại $(-2;-3)$.<br/>Thử tọa độ điểm $(0;1)$ vào các đáp án, chỉ có đáp án C và D thỏa mãn.<br/>Kiểm tra TCX của D: $y = \\frac{x(x+1)+1}{x+1} = x + \\frac{1}{x+1}$ (thỏa TCX $y=x$). Vậy đáp án D đúng."
+            },
+            {
+                id: 10,
+                question: "Cho mẫu số liệu ghép nhóm về khoảng tuổi và số người như sau:<br/>" +
+                    "<table class='math-table w-full mt-2'><tr><td>Khoảng tuổi</td><td>$[20;30)$</td><td>$[30;40)$</td><td>$[40;50)$</td><td>$[50;60)$</td><td>$[60;70)$</td><td>$[70;80)$</td></tr><tr><td>Số người</td><td>$33$</td><td>$35$</td><td>$19$</td><td>$25$</td><td>$28$</td><td>$27$</td></tr></table><br/>Khoảng biến thiên của mẫu số liệu ghép nhóm là",
+                options: ["A. $16$", "B. $3$", "C. $61$", "D. $60$"],
+                correct: 3,
+                solution: "Khoảng biến thiên $R$ bằng hiệu của đầu mút phải của nhóm cuối cùng và đầu mút trái của nhóm đầu tiên: $R = 80 - 20 = 60$."
+            },
+            {
+                id: 11,
+                question: "Cho bảng số liệu ghép nhóm về chiều cao đo được của 30 học sinh nam lớp 12A2 đầu năm học 2024-2025 của trường PT Triệu Sơn như sau.<br/>" +
+                    "<table class='math-table w-full mt-2'><tr><td>Chiều cao (cm)</td><td>$[150;155)$</td><td>$[155;160)$</td><td>$[160;165)$</td><td>$[165;170)$</td><td>$[170;175)$</td></tr><tr><td>Tần số</td><td>$3$</td><td>$7$</td><td>$10$</td><td>$7$</td><td>$3$</td></tr></table><br/>Tính độ lệch chuẩn của mẫu số liệu ghép nhóm.",
+                options: ["A. $\\frac{\\sqrt{285}}{3}$", "B. $\\frac{\\sqrt{287}}{3}$", "C. $4\\sqrt{2}$", "D. $\\sqrt{71}$"],
+                correct: 0,
+                solution: "Giá trị đại diện: $152.5, 157.5, 162.5, 167.5, 172.5$. Do dữ liệu đối xứng, số trung bình $\\bar{x} = 162.5$.<br/>Phương sai $s^2 = \\frac{1}{30} \\left[ 3(152.5-162.5)^2 + 7(157.5-162.5)^2 + 10(0)^2 + 7(167.5-162.5)^2 + 3(172.5-162.5)^2 \\right]$<br/>$s^2 = \\frac{1}{30} \\left[ 3(100) + 7(25) + 0 + 7(25) + 3(100) \\right] = \\frac{950}{30} = \\frac{95}{3}$.<br/>Độ lệch chuẩn $s = \\sqrt{\\frac{95}{3}} = \\frac{\\sqrt{285}}{3}$."
+            },
+            {
+                id: 12,
+                question: "Cho $f'(x)=(x-1)^3(2-x)(x-3)^2$. Hàm số $y=f(x)$ đồng biến trên khoảng nào sau đây?",
+                options: [
+                    "A. $(-\\infty;1)$ và $(3;+\\infty)$", 
+                    "B. $(-\\infty;1)$ và $(2;+\\infty)$", 
+                    "C. $(1;2)$", 
+                    "D. $(3;+\\infty)$"
+                ],
+                correct: 2,
+                solution: "Hàm số đồng biến khi $f'(x) > 0 \\Leftrightarrow (x-1)^3(2-x)(x-3)^2 > 0$.<br/>Vì $(x-3)^2 \\ge 0$ và $(x-1)^2 > 0$ với mọi $x$ thỏa mãn khoảng xét, ta chỉ cần xét $(x-1)(2-x) > 0 \\Leftrightarrow 1 < x < 2$."
+            },
+            {
+                id: 13,
+                question: "Cho mẫu số liệu ghép nhóm về thời gian (phút) đi từ nhà đến nơi làm việc của các nhân viên một công ty như sau:<br/>" +
+                    "<table class='math-table w-full mt-2'><tr><td>Thời gian</td><td>$[15;20)$</td><td>$[20;25)$</td><td>$[25;30)$</td><td>$[30;35)$</td><td>$[35;40)$</td><td>$[40;45)$</td><td>$[45;50)$</td></tr><tr><td>Số nhân viên</td><td>$6$</td><td>$14$</td><td>$30$</td><td>$25$</td><td>$22$</td><td>$15$</td><td>$8$</td></tr></table><br/>Tìm khoảng tứ phân vị của mẫu số liệu trên.",
+                options: ["A. $22,1$", "B. $11,8$", "C. $21$", "D. $11,7$"],
+                correct: 3,
+                solution: "Tổng số nhân viên $N = 120$.<br/>Vị trí $Q_1$ là $120/4 = 30$. Tích lũy đến nhóm $[20;25)$ là $6+14=20$. Nhóm chứa $Q_1$ là $[25;30)$.<br/>$Q_1 = 25 + \\frac{30 - 20}{30} \\times 5 = 26.67$.<br/>Vị trí $Q_3$ là $3 \\times 120/4 = 90$. Tích lũy đến $[30;35)$ là $20+30+25=75$. Nhóm chứa $Q_3$ là $[35;40)$.<br/>$Q_3 = 35 + \\frac{90 - 75}{22} \\times 5 \\approx 38.41$.<br/>Khoảng tứ phân vị $\\Delta_Q = Q_3 - Q_1 = 38.41 - 26.67 = 11.74 \\approx 11,7$."
+            },
+            {
+                id: 14,
+                question: "Nguyên hàm của hàm số $f(x)=3^x-\\cos x$ là",
+                options: [
+                    "A. $\\frac{3^x}{\\ln 3}-\\sin x+C$", 
+                    "B. $3^x\\ln 3-\\sin x+C$", 
+                    "C. $\\frac{3^x}{\\ln 3}+\\sin x+C$", 
+                    "D. $3^x\\ln 3+\\sin x+C$"
+                ],
+                correct: 0,
+                solution: "Áp dụng công thức cơ bản: $\\int (3^x - \\cos x)dx = \\frac{3^x}{\\ln 3} - \\sin x + C$."
+            },
+            {
+                id: 15,
+                question: "Biết $F(x)=x^4$ là một nguyên hàm của hàm số $f(x)$ trên $\\mathbb{R}$. Giá trị của $\\int_{-1}^{2}[6x+f(x)]dx$ bằng",
+                options: ["A. $\\frac{78}{5}$", "B. $24$", "C. $\\frac{123}{5}$", "D. $33$"],
+                correct: 1,
+                solution: "Tích phân $I = \\int_{-1}^{2}6xdx + \\int_{-1}^{2}f(x)dx = 3x^2\\Big|_{-1}^{2} + F(x)\\Big|_{-1}^{2}$<br/>$I = 3(4 - 1) + (2^4 - (-1)^4) = 9 + (16 - 1) = 24$."
+            },
+            {
+                id: 16,
+                question: "Trong không gian $Oxyz$, cho hai điểm $M(-1;-1;2)$ và $N(1;3;4)$. Đường thẳng $MN$ có phương trình chính tắc là",
+                options: [
+                    "A. $\\frac{x-1}{2}=\\frac{y-1}{4}=\\frac{z+2}{2}$", 
+                    "B. $\\frac{x+1}{1}=\\frac{y+1}{2}=\\frac{z-2}{1}$", 
+                    "C. $\\frac{x-1}{2}=\\frac{y-1}{2}=\\frac{z+2}{1}$", 
+                    "D. $\\frac{x+1}{2}=\\frac{y+3}{4}=\\frac{z+4}{2}$"
+                ],
+                correct: 1,
+                solution: "Vectơ chỉ phương $\\vec{MN} = (2; 4; 2) = 2(1; 2; 1)$. Đường thẳng đi qua $M(-1;-1;2)$ và có VTCP $(1;2;1)$ có phương trình là $\\frac{x+1}{1}=\\frac{y+1}{2}=\\frac{z-2}{1}$."
+            },
+            {
+                id: 17,
+                question: "Trong không gian $Oxyz$, số đo góc giữa hai đường thẳng $d: \\frac{x-1}{1}=\\frac{y+2}{-2}=\\frac{z}{1}$ và $d': \\frac{x}{3}=\\frac{y-2}{1}=\\frac{z-3}{-1}$ là",
+                options: ["A. $30^\\circ$", "B. $45^\\circ$", "C. $60^\\circ$", "D. $90^\\circ$"],
+                correct: 3,
+                solution: "VTCP của $d$ là $\\vec{u}_1=(1; -2; 1)$, của $d'$ là $\\vec{u}_2=(3; 1; -1)$.<br/>Xét tích vô hướng: $\\vec{u}_1 \\cdot \\vec{u}_2 = 1(3) + (-2)(1) + 1(-1) = 0$. Hai đường thẳng vuông góc với nhau, góc bằng $90^\\circ$."
+            },
+            {
+                id: 18,
+                question: "Trong không gian $Oxyz$, mặt cầu $(S): (x-1)^2+y^2+z^2=4$ có đường kính bằng",
+                options: ["A. $3$", "B. $4$", "C. $1$", "D. $2$"],
+                correct: 1,
+                solution: "Phương trình mặt cầu có dạng $(x-a)^2+(y-b)^2+(z-c)^2=R^2 \\implies R^2=4 \\implies R=2$.<br/>Vậy đường kính mặt cầu $D = 2R = 4$."
+            },
+            {
+                id: 19,
+                question: "Cho hai biến cố $A$ và $B$, với $P(A)=0,6$; $P(B)=0,7$; $P(A \\cap B)=0,3$. Tính $P(B|A)$.",
+                options: ["A. $\\frac{3}{7}$", "B. $\\frac{1}{2}$", "C. $\\frac{6}{7}$", "D. $\\frac{1}{7}$"],
+                correct: 1,
+                solution: "Áp dụng công thức xác suất có điều kiện: $P(B|A) = \\frac{P(A \\cap B)}{P(A)} = \\frac{0,3}{0,6} = \\frac{1}{2}$."
+            },
+            {
+                id: 20,
+                question: "Cho hai biến cố $A$ và $B$, với $P(B)=0,8$; $P(A|B)=0,7$; $P(A|\\overline{B})=0,45$. Tính $P(B|A)$.",
+                options: ["A. $0,25$", "B. $\\frac{56}{65}$", "C. $0,65$", "D. $0,5$"],
+                correct: 1,
+                solution: "Ta có $P(\\overline{B}) = 1 - P(B) = 0,2$.<br/>$P(A \\cap B) = P(A|B) \\times P(B) = 0,7 \\times 0,8 = 0,56$.<br/>$P(A \\cap \\overline{B}) = P(A|\\overline{B}) \\times P(\\overline{B}) = 0,45 \\times 0,2 = 0,09$.<br/>$P(A) = P(A \\cap B) + P(A \\cap \\overline{B}) = 0,56 + 0,09 = 0,65$.<br/>Vậy $P(B|A) = \\frac{P(A \\cap B)}{P(A)} = \\frac{0,56}{0,65} = \\frac{56}{65}$."
+            }
+        ];
+
+        const part2Data = [
+            {
+                id: 1,
+                question: "Cho hàm số $y=x^3-3x+2$ có đồ thị là $(C)$.",
+                statements: [
+                    { text: "a) Đồ thị hàm số đã cho cắt trục tung tại điểm có tung độ bằng $2$.", correct: true },
+                    { text: "b) Đường thẳng đi qua hai điểm cực trị của đồ thị $(C)$ là $y=-2x+2$.", correct: true },
+                    { text: "c) Hàm số đã cho đồng biến trên khoảng $(0;+\\infty)$.", correct: false },
+                    { text: "d) Giá trị lớn nhất của hàm số đã cho trên đoạn $[-3;0]$ bằng $5$.", correct: false }
+                ],
+                solution: "a) ĐÚNG. Thay $x=0 \\implies y=2$.<br/>" +
+                          "b) ĐÚNG. Đạo hàm $y'=3x^2-3=0 \\implies x=\\pm 1$. Các điểm cực trị $(1;0)$ và $(-1;4)$ đều thuộc đường thẳng $y=-2x+2$.<br/>" +
+                          "c) SAI. Hàm số nghịch biến trên khoảng $(-1;1)$ nên không thể đồng biến trên $(0;+\\infty)$.<br/>" +
+                          "d) SAI. Trên đoạn $[-3;0]$, ta tính $y(-3)=-16$, $y(-1)=4$, $y(0)=2$. Giá trị lớn nhất bằng $4$, không phải $5$."
+            },
+            {
+                id: 2,
+                question: "Một người điều khiển ô tô đang ở trên đường cao tốc muốn tách làn ra khỏi đường cao tốc. Khi ô tô cách điểm tách làn $320\\text{m}$, tốc độ của ô tô là $90\\text{km/h}$. Bốn giây sau đó, ô tô bắt đầu giảm tốc với tốc độ $v(t)=at+b$ (m/s) với $(a,b \\in \\mathbb{R}, a < 0)$, trong đó $t$ là thời gian tính bằng giây kể từ khi bắt đầu giảm tốc. Biết rằng ô tô tách khỏi làn đường cao tốc sau $10$ giây và duy trì sự giảm tốc trong $20$ giây kể từ khi bắt đầu giảm tốc.",
+                statements: [
+                    { text: "a) Quãng đường ô tô đi được từ khi bắt đầu giảm tốc đến khi tách khỏi làn đường cao tốc là $220\\text{m}$.", correct: true },
+                    { text: "b) Giá trị của $b$ là $20$.", correct: false },
+                    { text: "c) Quãng đường $S(t)$ (đơn vị: mét) mà ô tô đi được trong thời gian $t$ giây $(0 \\le t \\le 20)$ kể từ khi giảm tốc được tính theo công thức $S(t)=\\int_{0}^{20}v(t)dt$.", correct: false },
+                    { text: "d) Sau 20 giây kể từ khi giảm tốc, tốc độ của ô tô không vượt quá tốc độ tối đa cho phép là $50\\text{km/h}$.", correct: true }
+                ],
+                solution: "Tốc độ ban đầu: $90\\text{km/h} = 25\\text{m/s}$.<br/>" +
+                          "a) ĐÚNG. Trong 4s trước khi giảm tốc, ô tô đi được $4 \\times 25 = 100\\text{m}$. Quãng đường còn lại là $320 - 100 = 220\\text{m}$.<br/>" +
+                          "b) SAI. Vận tốc lúc bắt đầu giảm tốc $(t=0)$ là $v(0)=b=25$. Vậy $b=25$, không phải $20$.<br/>" +
+                          "c) SAI. Công thức tính quãng đường theo thời gian $t$ là $\\int_{0}^{t}v(x)dx$. Tích phân đến $20$ là quãng đường cố định đi được trong toàn bộ 20 giây.<br/>" +
+                          "d) ĐÚNG. Ta có $\\int_{0}^{10}(at+25)dt = 220 \\implies 50a + 250 = 220 \\implies a = -0,6$. Vận tốc sau 20s là $v(20) = -0,6(20) + 25 = 13\\text{m/s} = 46,8\\text{km/h} \\le 50\\text{km/h}$."
+            },
+            {
+                id: 3,
+                question: "Trong không gian $Oxyz$, cho ba điểm $A(3;1;-1)$, $B(4;-1;2)$, $C(1;3;-2)$ và mặt phẳng $(\\alpha): 4x+2y-z-12=0$.",
+                statements: [
+                    { text: "a) Đường thẳng $BC$ không nằm trên mặt phẳng $(\\alpha)$.", correct: false },
+                    { text: "b) Mặt cầu tâm $I(-4;4;-1)$, tiếp xúc với mặt phẳng $(ABC)$ có bán kính bằng $\\frac{26}{\\sqrt{5}}$.", correct: false },
+                    { text: "c) Đường thẳng $AC$ có phương trình tham số là $\\begin{cases}x=4+t\\\\ y=-1-2t\\\\ z=2-3t\\end{cases}$", correct: false },
+                    { text: "d) Với điểm $M \\in (\\alpha)$ thì giá trị nhỏ nhất của biểu thức $|\\vec{MA}-4\\vec{MB}-3\\vec{MC}|$ bằng $\\frac{3}{\\sqrt{21}}$.", correct: true }
+                ],
+                solution: "a) SAI. Thay tọa độ $B$ và $C$ vào $(\\alpha)$, cả hai đều thỏa mãn bằng $0$. Do đó đường thẳng $BC$ nằm TRÊN $(\\alpha)$.<br/>" +
+                          "b) SAI. Mặt phẳng $(ABC)$ có VTPT $\\vec{n} = [\\vec{AB}, \\vec{AC}] = (4; 5; 2)$. Phương trình $(ABC): 4x+5y+2z-15=0$. Bán kính $R = d(I, (ABC)) = \\frac{13}{3\\sqrt{5}}$.<br/>" +
+                          "c) SAI. Điểm $(4;-1;2)$ là điểm $B$. VTCP của phương trình này là $(1;-2;-3)$ không cùng phương với $\\vec{AC}=(-2; 2; -1)$.<br/>" +
+                          "d) ĐÚNG. Gọi $I$ thỏa $\\vec{IA}-4\\vec{IB}-3\\vec{IC}=\\vec{0} \\implies I(8/3; 2/3; 1/2)$. Ta có $|\\vec{MA}-4\\vec{MB}-3\\vec{MC}| = |-6\\vec{MI}| = 6MI$. $MI_{\\min} = d(I, \\alpha) = \\frac{1/2}{\\sqrt{21}}$. Giá trị nhỏ nhất là $6 \\times \\frac{1/2}{\\sqrt{21}} = \\frac{3}{\\sqrt{21}}$."
+            },
+            {
+                id: 4,
+                question: "Có hai phác đồ điều trị A và B cho một loại bệnh. Phác đồ A có xác suất chữa khỏi bệnh là 60% và xác suất gây tác dụng phụ nghiêm trọng là 5%. Phác đồ B có xác suất chữa khỏi bệnh là 70% và xác suất gây tác dụng phụ nghiêm trọng là 10%. Một bệnh nhân được điều trị ngẫu nhiên bằng một trong hai phác đồ (xác suất chọn mỗi phác đồ là 50%).",
+                statements: [
+                    { text: "a) Xác suất bệnh nhân điều trị bằng phác đồ A và được chữa khỏi bệnh là $0,6$.", correct: false },
+                    { text: "b) Xác suất để bệnh nhân bị tác dụng phụ nghiêm trọng là $0,075$.", correct: true },
+                    { text: "c) Nếu biết bệnh nhân này gặp tác dụng phụ nghiêm trọng thì xác suất bệnh nhân đã được điều trị bằng phác đồ B lớn hơn $0,65$.", correct: true },
+                    { text: "d) Biết rằng trong mỗi phác đồ, biến cố khỏi bệnh và biến cố không bị tác dụng phụ là độc lập. Xác suất bệnh nhân khỏi bệnh và không bị tác dụng phụ nghiêm trọng là $0,6$.", correct: true }
+                ],
+                solution: "a) SAI. Xác suất $P(A \\cap Khỏi) = 0,5 \\times 0,6 = 0,3$ (chứ không phải $0,6$).<br/>" +
+                          "b) ĐÚNG. $P(TDP) = 0,5 \\times 0,05 + 0,5 \\times 0,10 = 0,075$.<br/>" +
+                          "c) ĐÚNG. Theo Bayes, $P(B | TDP) = \\frac{P(B \\cap TDP)}{P(TDP)} = \\frac{0,05}{0,075} = \\frac{2}{3} \\approx 0,667 > 0,65$.<br/>" +
+                          "d) ĐÚNG. Xác suất tại $A$: $0,5 \\times (0,6 \\times 0,95) = 0,285$. Tại $B$: $0,5 \\times (0,7 \\times 0,9) = 0,315$. Tổng là $0,285 + 0,315 = 0,6$."
+            }
+        ];
+
+        const part3Data = [
+            {
+                id: 1,
+                question: "Trong không gian $Oxyz$, phương trình của mặt cầu $(S)$ có tâm $I(1;2;3)$ và tiếp xúc với mặt phẳng $(P): x+2y-2z+4=0$ có dạng $x^2+y^2+z^2-2ax-2by-2cz+d=0$. Tính giá trị của biểu thức $P=a-2b+c-d$.",
+                answer: "-13",
+                solution: "Bán kính $R = d(I, P) = \\frac{|1+2(2)-2(3)+4|}{\\sqrt{1^2+2^2+(-2)^2}} = \\frac{3}{3} = 1$.<br/>Phương trình mặt cầu $(S)$: $(x-1)^2+(y-2)^2+(z-3)^2=1 \\Leftrightarrow x^2+y^2+z^2-2x-4y-6z+13=0$.<br/>Đồng nhất hệ số: $a=1, b=2, c=3, d=13$.<br/>Suy ra $P = 1 - 2(2) + 3 - 13 = -13$."
+            },
+            {
+                id: 2,
+                question: "Một công ty sản xuất dụng cụ thể thao nhận được một đơn đặt hàng sản xuất $12000$ quả bóng Pickleball. Mỗi máy có thể sản xuất được $40$ quả bóng trong một giờ. Chi phí thiết lập là $150$ nghìn đồng cho mỗi máy. Số tiền phải trả cho người giám sát hệ thống chạy tự động là $98$ nghìn đồng một giờ. Số máy móc công ty nên sử dụng là bao nhiêu để chi phí hoạt động là thấp nhất?",
+                answer: "14",
+                solution: "Gọi số máy cần dùng là $n$. Thời gian hoàn thành: $t = \\frac{12000}{40n} = \\frac{300}{n}$ (giờ).<br/>Tổng chi phí $C(n) = 150n + 98t = 150n + \\frac{29400}{n}$.<br/>Áp dụng BĐT AM-GM hoặc đạo hàm, $C(n)$ đạt GTNN khi $150n = \\frac{29400}{n} \\implies n^2 = 196 \\implies n = 14$."
+            },
+            {
+                id: 3,
+                question: "Một công ty đang thiết kế một bảng quảng cáo hình chữ nhật $ABCD$ có kích thước $AB=12\\text{m}$ và $AD=8\\text{m}$. Phần trung tâm của bảng (tô xám) sẽ được in nội dung quảng cáo. Hai đường cong là một phần của đồ thị hàm số $y=\\frac{ax+b}{cx+d}$ có đường tiệm cận đứng và tiệm cận ngang đều cách điểm $A$ một khoảng bằng $5\\text{m}$. Đồ thị giao với cạnh $AB$ tại điểm $E$ thỏa mãn $\\frac{AE}{AB}=\\frac{7}{15}$.<br/>" +
+                    "<div class='w-full flex justify-center mt-4 mb-4'>" +
+                    "<svg width='300' height='200' viewBox='0 0 300 200'>" +
+                    "<rect x='30' y='30' width='240' height='160' fill='#9ca3af' stroke='black' stroke-width='1.5'/>" +
+                    "<path d='M 30 78 Q 120 75 110 30 L 30 30 Z' fill='white' />" +
+                    "<path d='M 142 190 Q 145 105 270 98.6 L 270 190 Z' fill='white' />" +
+                    "<line x1='130' y1='30' x2='130' y2='190' stroke='gray' stroke-dasharray='4'/>" +
+                    "<line x1='30' y1='90' x2='270' y2='90' stroke='gray' stroke-dasharray='4'/>" +
+                    "<text x='15' y='205' font-style='italic' font-weight='bold' font-size='18'>A</text>" +
+                    "<text x='275' y='205' font-style='italic' font-weight='bold' font-size='18'>B</text>" +
+                    "<text x='275' y='25' font-style='italic' font-weight='bold' font-size='18'>C</text>" +
+                    "<text x='15' y='25' font-style='italic' font-weight='bold' font-size='18'>D</text>" +
+                    "<text x='140' y='210' font-style='italic' font-weight='bold' font-size='18'>E</text>" +
+                    "<text x='275' y='110' font-style='italic' font-weight='bold' font-size='18'>F</text>" +
+                    "</svg></div>" +
+                    "Diện tích phần in nội dung quảng cáo là bao nhiêu mét vuông (làm tròn kết quả đến hàng phần mười)?",
+                answer: "64.2",
+                solution: "Chọn $A$ làm gốc tọa độ. Hai đường tiệm cận là $x=5$ và $y=5$. Phương trình có dạng $y=5+\\frac{k}{x-5}$.<br/>$AE = 12 \\times \\frac{7}{15} = 5,6$. Điểm $E(5.6; 0)$ thuộc đường cong $\\implies 0 = 5 + \\frac{k}{5,6 - 5} \\implies k = -3$.<br/>Vậy phương trình hàm số: $y = 5 - \\frac{3}{x-5}$.<br/>Diện tích hcn là $12 \\times 8 = 96\\text{m}^2$.<br/>Tính 2 phần diện tích màu trắng:<br/>- Phần góc D (cắt $AD$ tại $y=5,6$, cắt $CD$ tại $x=4$): $S_1 = \\int_{0}^{4} \\left(8 - (5 - \\frac{3}{x-5})\\right)dx = 12 - 3\\ln 5$.<br/>- Phần góc B (từ $E(5,6;0)$ đến biên $BC$ tại $x=12$): $S_2 = \\int_{5,6}^{12} \\left(5 - \\frac{3}{x-5}\\right)dx = 32 - 3\\ln(11,667)$.<br/>Diện tích in quảng cáo = $96 - (S_1 + S_2) = 52 + 3\\ln\\left(\\frac{175}{3}\\right) \\approx 64,198 \\approx 64,2\\text{m}^2$."
+            },
+            {
+                id: 4,
+                question: "Bạn An đi học mỗi ngày bằng một trong hai phương tiện: xe buýt hoặc xe đạp. Vì vội, An chọn ngẫu nhiên một trong hai phương tiện này với xác suất như nhau. Nếu An đi xe buýt thì xác suất bị muộn học là 6%; nếu An đi xe đạp thì xác suất bị muộn học là 4%. Hỏi vào một ngày bất kỳ, xác suất An bị muộn học là bao nhiêu?",
+                answer: "0.05",
+                solution: "Gọi biến cố $M$: \"An đi muộn\".<br/>Áp dụng công thức xác suất toàn phần: $P(M) = P(\\text{Bus}) \\cdot P(M|\\text{Bus}) + P(\\text{Bike}) \\cdot P(M|\\text{Bike})$<br/>$P(M) = 0,5 \\times 0,06 + 0,5 \\times 0,04 = 0,03 + 0,02 = 0,05$."
+            }
+        ];
+
+        const App = () => {
+            const [answersP1, setAnswersP1] = useState({});
+            const [answersP2, setAnswersP2] = useState({});
+            const [answersP3, setAnswersP3] = useState({});
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [score, setScore] = useState(0);
+
+            useEffect(() => {
+                if (isSubmitted && window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
+                    window.MathJax.typesetPromise().catch(err => console.error(err));
+                }
+            }, [isSubmitted]);
+
+            const handleP1Change = (qId, optionIndex) => {
+                if(isSubmitted) return;
+                setAnswersP1(prev => ({ ...prev, [qId]: optionIndex }));
+            };
+
+            const handleP2Change = (qId, stmtIndex, value) => {
+                if(isSubmitted) return;
+                setAnswersP2(prev => ({
+                    ...prev,
+                    [qId]: { ...(prev[qId] || {}), [stmtIndex]: value }
+                }));
+            };
+
+            const handleP3Change = (qId, value) => {
+                if(isSubmitted) return;
+                setAnswersP3(prev => ({ ...prev, [qId]: value }));
+            };
+
+            const calculateScore = () => {
+                let s = 0;
+                // Part 1: 0.2 per correct (Total 20 questions = 4.0 points)
+                part1Data.forEach(q => {
+                    if (answersP1[q.id] === q.correct) s += 0.2;
+                });
+
+                // Part 2: 4 points total (1pt per question)
+                // 0 wrong = 1.0, 1 wrong = 0.5, 2 wrong = 0.25, 3 wrong = 0.1, 4 wrong = 0
+                part2Data.forEach(q => {
+                    const ans = answersP2[q.id] || {};
+                    let wrongCount = 0;
+                    q.statements.forEach((stmt, idx) => {
+                        if (ans[idx] !== undefined) {
+                            if (ans[idx] !== stmt.correct) wrongCount++;
+                        } else {
+                            wrongCount++; // empty counts as wrong
+                        }
+                    });
+                    if (wrongCount === 0) s += 1;
+                    else if (wrongCount === 1) s += 0.5;
+                    else if (wrongCount === 2) s += 0.25;
+                    else if (wrongCount === 3) s += 0.1;
+                });
+
+                // Part 3: 2 points total (0.5 per question)
+                part3Data.forEach(q => {
+                    const userAns = (answersP3[q.id] || '').trim().replace(',', '.');
+                    if (userAns === q.answer) s += 0.5;
+                });
+
+                setScore(s);
+                setIsSubmitted(true);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            const MathText = ({ content }) => {
+                const divRef = React.useRef(null);
+                useEffect(() => {
+                    if (window.MathJax && typeof window.MathJax.typesetPromise === 'function' && divRef.current) {
+                        window.MathJax.typesetPromise([divRef.current]).catch(err => console.error(err));
+                    }
+                }, [content]);
+                return <div ref={divRef} dangerouslySetInnerHTML={{ __html: content }} />;
+            };
+
+            return (
+                <React.Fragment>
+                <div className="max-w-4xl mx-auto p-4 md:p-6 mb-24">
+                    <div className="text-center mb-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
+                        <h1 className="text-3xl font-bold text-blue-800 uppercase">Đề Kiểm Tra Cuối Học Kỳ 2</h1>
+                        <p className="text-lg text-gray-700 font-semibold mt-2">Môn: Toán 12 - Đề Số 3</p>
+                    </div>
+
+                    {isSubmitted && (
+                        <div className="bg-green-100 border-l-4 border-green-500 text-green-800 p-4 mb-8 rounded shadow">
+                            <h2 className="text-2xl font-bold">Điểm của bạn: <span className="text-3xl">{score.toFixed(2)}</span> / 10</h2>
+                            <p>Hãy xem chi tiết lời giải ở bên dưới.</p>
+                        </div>
+                    )}
+
+                    {/* PHẦN 1 */}
+                    <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+                        <h2 className="text-xl font-bold border-b-2 border-blue-600 pb-2 mb-4 text-blue-800">PHẦN I. Câu trắc nghiệm (0.2 điểm / câu đúng)</h2>
+                        {part1Data.map((q, idx) => (
+                            <div key={q.id} className="mb-8 border-b pb-4 last:border-0">
+                                <div className="font-semibold text-lg mb-2">Câu {idx + 1}: <MathText content={q.question} /></div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    {q.options.map((opt, optIdx) => {
+                                        const isChecked = answersP1[q.id] === optIdx;
+                                        let textClass = "";
+                                        if (isSubmitted) {
+                                            if (optIdx === q.correct) textClass = "correct-text";
+                                            else if (isChecked && optIdx !== q.correct) textClass = "wrong-text";
+                                        }
+
+                                        return (
+                                            <label key={optIdx} className={`flex items-center p-3 rounded border cursor-pointer transition ${isChecked ? 'bg-blue-50 border-blue-400' : 'hover:bg-gray-50'}`}>
+                                                <input 
+                                                    type="radio" 
+                                                    name={`p1-q${q.id}`} 
+                                                    checked={isChecked}
+                                                    onChange={() => handleP1Change(q.id, optIdx)}
+                                                    disabled={isSubmitted}
+                                                    className="w-4 h-4 text-blue-600"
+                                                />
+                                                <span className={`ml-3 ${textClass}`}><MathText content={opt} /></span>
+                                            </label>
+                                        );
+                                    })}
+                                </div>
+                                {isSubmitted && (
+                                    <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded text-gray-800 text-sm">
+                                        <strong>Lời giải:</strong> <MathText content={q.solution} />
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* PHẦN 2 */}
+                    <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+                        <h2 className="text-xl font-bold border-b-2 border-blue-600 pb-2 mb-4 text-blue-800">PHẦN II. Câu trắc nghiệm đúng sai (Tối đa 1đ / câu)</h2>
+                        <p className="text-sm text-gray-500 mb-6 italic">Đúng 4 ý: 1đ, Sai 1 ý: 0.5đ, Sai 2 ý: 0.25đ, Sai 3 ý: 0.1đ, Sai 4 ý: 0đ.</p>
+                        {part2Data.map((q, idx) => (
+                            <div key={q.id} className="mb-8 border-b pb-4 last:border-0">
+                                <div className="font-semibold text-lg mb-4">Câu {idx + 1}: <MathText content={q.question} /></div>
+                                <div className="space-y-3 mt-4">
+                                    {q.statements.map((stmt, stmtIdx) => {
+                                        const val = answersP2[q.id]?.[stmtIdx];
+                                        let stmtClass = "";
+                                        if (isSubmitted) {
+                                            if (stmt.correct) stmtClass = "correct-text";
+                                        }
+
+                                        return (
+                                            <div key={stmtIdx} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded border bg-gray-50 hover:bg-gray-100 transition">
+                                                <div className={`sm:w-3/4 mb-2 sm:mb-0 ${stmtClass}`}><MathText content={stmt.text} /></div>
+                                                <div className="flex gap-4 font-semibold shrink-0">
+                                                    <label className="flex items-center cursor-pointer">
+                                                        <input type="radio" checked={val === true} onChange={() => handleP2Change(q.id, stmtIdx, true)} disabled={isSubmitted} className="mr-2 text-blue-600 focus:ring-blue-500" /> Đúng
+                                                    </label>
+                                                    <label className="flex items-center cursor-pointer">
+                                                        <input type="radio" checked={val === false} onChange={() => handleP2Change(q.id, stmtIdx, false)} disabled={isSubmitted} className="mr-2 text-red-600 focus:ring-red-500" /> Sai
+                                                    </label>
+                                                </div>
+                                                {isSubmitted && (
+                                                    <div className="mt-2 sm:mt-0 sm:ml-4 text-sm font-bold flex-shrink-0">
+                                                        {val === stmt.correct ? <span className="text-green-600 px-2 py-1 bg-green-100 rounded">✓ Đạt</span> : <span className="text-red-600 px-2 py-1 bg-red-100 rounded">✗ Lỗi</span>}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                                {isSubmitted && (
+                                    <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded text-gray-800 text-sm">
+                                        <strong>Lời giải:</strong> <MathText content={q.solution} />
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* PHẦN 3 */}
+                    <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+                        <h2 className="text-xl font-bold border-b-2 border-blue-600 pb-2 mb-4 text-blue-800">PHẦN III. Câu trắc nghiệm trả lời ngắn (0.5 điểm / câu)</h2>
+                        <p className="text-sm text-gray-500 mb-6 italic">Ghi chú: Nếu kết quả là số thập phân, sử dụng dấu phẩy hoặc dấu chấm (VD: 64,2 hoặc 64.2).</p>
+                        {part3Data.map((q, idx) => {
+                            const userAns = answersP3[q.id] || '';
+                            let isCorrect = false;
+                            if (isSubmitted) {
+                                isCorrect = userAns.trim().replace(',', '.') === q.answer;
+                            }
+                            return (
+                                <div key={q.id} className="mb-6 border-b pb-4 last:border-0">
+                                    <div className="font-semibold text-lg mb-4">Câu {idx + 1}: <MathText content={q.question} /></div>
+                                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-3">
+                                        <span className="font-semibold whitespace-nowrap">Đáp án của bạn:</span>
+                                        <input 
+                                            type="text" 
+                                            value={userAns} 
+                                            onChange={(e) => handleP3Change(q.id, e.target.value)}
+                                            disabled={isSubmitted}
+                                            placeholder="Nhập số..."
+                                            className={`border rounded-lg p-2 w-full sm:w-40 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm transition ${isSubmitted && (isCorrect ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50')}`}
+                                        />
+                                        {isSubmitted && (
+                                            isCorrect ? <span className="text-green-600 font-bold">✓ Chính xác</span> : <span className="text-red-600 font-bold">✗ Sai (Đ.A đúng: {q.answer.replace('.', ',')})</span>
+                                        )}
+                                    </div>
+                                    {isSubmitted && (
+                                        <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded text-gray-800 text-sm">
+                                            <strong>Lời giải:</strong> <MathText content={q.solution} />
+                                        </div>
+                                    )}
+                                </div>
+                            )
+                        })}
+                    </div>
+
+                </div>
+
+                {/* Footer Bar */}
+                <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] flex justify-center z-50">
+                    {!isSubmitted ? (
+                        <button 
+                            onClick={calculateScore} 
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-10 rounded-full shadow-lg transition transform hover:scale-105"
+                        >
+                            KẾT THÚC VÀ NỘP BÀI
+                        </button>
+                    ) : (
+                        <button 
+                            onClick={() => window.location.reload()} 
+                            className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-10 rounded-full shadow-lg transition transform hover:scale-105"
+                        >
+                            LÀM LẠI TỪ ĐẦU
+                        </button>
+                    )}
+                </div>
+                </React.Fragment>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
