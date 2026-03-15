@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ôn thi giữa học kỳ 2 Toán 12 - Đề 1</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            startup: {
+                pageReady: () => {
+                    return MathJax.startup.defaultPageReady();
+                }
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; }
+        .math-table td, .math-table th { border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; }
+        .correct-text { text-decoration: underline; font-weight: bold; color: #16a34a; }
+        .wrong-text { color: #dc2626; text-decoration: line-through; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- DATA DE 1 ---
+        const part1Data = [
+            {
+                id: 1,
+                question: "Tính tích phân $I=\\int_{0}^{\\frac{\\pi}{2}}2 \\sin x dx.$",
+                options: ["A. $I=7$", "B. $I=5+\\frac{\\pi}{2}$", "C. $I=3$", "D. $I=2$"],
+                correct: 3,
+                solution: "Ta có $I = \\int_{0}^{\\frac{\\pi}{2}} 2\\sin x dx = -2\\cos x \\Big|_{0}^{\\frac{\\pi}{2}} = -2(0 - 1) = 2$."
+            },
+            {
+                id: 2,
+                question: "Cho hàm số $y=f(x)$ có đạo hàm liên tục trên $[0;2]$, $f(0)=1$ và $\\int_{0}^{2}f^{\\prime}(x)dx=-3$. Tính $f(2)$.",
+                options: ["A. $f(2)=-4$", "B. $f(2)=4$", "C. $f(2)=-2$", "D. $f(2)=-3$"],
+                correct: 2,
+                solution: "Ta có $\\int_{0}^{2}f'(x)dx = f(2) - f(0)$. Thay số: $-3 = f(2) - 1 \\Rightarrow f(2) = -2$."
+            },
+            {
+                id: 3,
+                question: "Thể tích của khối tròn xoay khi quay hình phẳng được giới hạn bởi đồ thị hàm số $y=2x-1$, $y=0$, $x=0$, $x=3$ quanh trục hoành bằng",
+                options: ["A. $21$", "B. $6\\pi$", "C. $6$", "D. $21\\pi$"],
+                correct: 3,
+                solution: "Thể tích $V = \\pi \\int_{0}^{3} (2x-1)^2 dx = \\pi \\int_{0}^{3} (4x^2 - 4x + 1) dx = \\pi \\left[ \\frac{4x^3}{3} - 2x^2 + x \\right]_{0}^{3} = \\pi (36 - 18 + 3) = 21\\pi$."
+            },
+            {
+                id: 4,
+                question: "Trong không gian $Oxyz$, mặt phẳng $(P): x+2y-6z-1=0$ đi qua điểm nào dưới đây?",
+                options: ["A. $B(-3;2;0)$", "B. $D(1;2;-6)$", "C. $A(-1;-4;1)$", "D. $C(-1;-2;1)$"],
+                correct: 0,
+                solution: "Thay toạ độ điểm $B(-3;2;0)$ vào phương trình $(P)$: $-3 + 2(2) - 6(0) - 1 = -3 + 4 - 1 = 0$ (thoả mãn)."
+            },
+            {
+                id: 5,
+                question: "Phương trình mặt phẳng $(P)$ đi qua điểm $M(1;3;-2)$ và song song với mặt phẳng $(Q): 2x+5y+z+1=0$ là",
+                options: [
+                    "A. $2x+5y+z+19=0$", 
+                    "B. $x+3y-2z+15=0$", 
+                    "C. $2x+5y+z-15=0$", 
+                    "D. $x+3y-2z-19=0$"
+                ],
+                correct: 2,
+                solution: "Mặt phẳng $(P) \\parallel (Q)$ nên nhận $\\vec{n}=(2;5;1)$ làm VTPT. Phương trình: $2(x-1) + 5(y-3) + 1(z+2) = 0 \\Leftrightarrow 2x+5y+z-15=0$."
+            },
+            {
+                id: 6,
+                question: "Trong không gian $Oxyz$, một vectơ chỉ phương của đường thẳng $d: \\frac{x-1}{2}=\\frac{y-3}{3}=\\frac{2-z}{5}$ là",
+                options: [
+                    "A. $\\vec{u}=(2;3;5)$", 
+                    "B. $\\vec{u}=(1;3;2)$", 
+                    "C. $\\vec{u}=(1;3;-2)$", 
+                    "D. $\\vec{u}=(2;3;-5)$"
+                ],
+                correct: 3,
+                solution: "Viết lại phương trình: $\\frac{x-1}{2}=\\frac{y-3}{3}=\\frac{z-2}{-5}$. Suy ra VTCP là $\\vec{u}=(2;3;-5)$."
+            },
+            {
+                id: 7,
+                question: "Trong không gian $Oxyz$ cho đường thẳng $d: \\begin{cases}x=2-t\\\\ y=3+t\\\\ z=6-3t\\end{cases}$. Điểm nào sau đây không thuộc đường thẳng $d$?",
+                options: ["A. $A(2;3;6)$", "B. $B(0;5;0)$", "C. $C(1;4;4)$", "D. $D(4;1;12)$"],
+                correct: 2,
+                solution: "Thay toạ độ $C(1;4;4)$ vào phương trình $d$: $1 = 2-t \\Rightarrow t=1$. Thay $t=1$ vào $y, z$: $y=3+1=4$, $z=6-3(1)=3 \\neq 4$. Vậy $C$ không thuộc $d$."
+            },
+            {
+                id: 8,
+                question: "Trong không gian $Oxyz$, cho $A(1;3;-2)$, $B(1;1;5)$. Phương trình đường thẳng $AB$ là",
+                options: [
+                    "A. $\\begin{cases}x=1+2t\\\\ y=3+4t\\\\ z=-2+3t\\end{cases}$", 
+                    "B. $\\begin{cases}x=t\\\\ y=-2+3t\\\\ z=1-2t\\end{cases}$", 
+                    "C. $\\begin{cases}x=1+t\\\\ y=3+t\\\\ z=-2+5t\\end{cases}$", 
+                    "D. $\\begin{cases}x=1\\\\ y=3-2t\\\\ z=-2+7t\\end{cases}$"
+                ],
+                correct: 3,
+                solution: "Vectơ chỉ phương $\\vec{AB} = (0; -2; 7)$. Đi qua $A(1;3;-2)$. Phương trình: $x=1$, $y=3-2t$, $z=-2+7t$."
+            },
+            {
+                id: 9,
+                question: "Tìm một nguyên hàm $F(x)$ của hàm số $f(x)=x(3x+2)$, biết $F(0)=1$.",
+                options: [
+                    "A. $F(x)=x^3+x^2+1$", 
+                    "B. $F(x)=x^3-x^2+1$", 
+                    "C. $F(x)=x^3+x^2$", 
+                    "D. $F(x)=x^3+x^2-1$"
+                ],
+                correct: 0,
+                solution: "$f(x) = 3x^2 + 2x \\Rightarrow F(x) = \\int (3x^2+2x)dx = x^3 + x^2 + C$. Do $F(0)=1 \\Rightarrow C=1$. Vậy $F(x) = x^3+x^2+1$."
+            },
+            {
+                id: 10,
+                question: "Hàm số $F(x)=2 \\sin x - 3 \\cos x$ là một nguyên hàm của hàm số",
+                options: [
+                    "A. $f(x)=-2 \\cos x - 3 \\sin x$", 
+                    "B. $f(x)=-2 \\cos x + 3 \\sin x$", 
+                    "C. $f(x)=2 \\cos x - 3 \\sin x$", 
+                    "D. $f(x)=2 \\cos x + 3 \\sin x$"
+                ],
+                correct: 3,
+                solution: "Đạo hàm của $F(x)$ chính là $f(x)$. $f(x) = F'(x) = 2 \\cos x - 3(-\\sin x) = 2 \\cos x + 3 \\sin x$."
+            },
+            {
+                id: 11,
+                question: "Tìm nguyên hàm của hàm số $f(x)=x+\\frac{1}{x}$.",
+                options: [
+                    "A. $\\int f(x)dx=\\ln x+\\frac{1}{2}x^2+C$", 
+                    "B. $\\int f(x)dx=\\ln|x|+x^2+C$", 
+                    "C. $\\int f(x)dx=\\ln|x|+\\frac{1}{2}x^2+C$", 
+                    "D. $\\int f(x)dx=\\ln x+x^2+C$"
+                ],
+                correct: 2,
+                solution: "Ta có $\\int (x+\\frac{1}{x})dx = \\frac{1}{2}x^2 + \\ln|x| + C$."
+            },
+            {
+                id: 12,
+                question: "Biết $\\int_{0}^{1}[f(x)+2x]dx=5$. Khi đó $\\int_{0}^{1}f(x)dx$ bằng",
+                options: ["A. $7$", "B. $3$", "C. $5$", "D. $4$"],
+                correct: 3,
+                solution: "Ta có $\\int_{0}^{1}[f(x)+2x]dx = \\int_{0}^{1}f(x)dx + \\int_{0}^{1}2xdx = \\int_{0}^{1}f(x)dx + 1 = 5 \\Rightarrow \\int_{0}^{1}f(x)dx = 4$."
+            },
+            {
+                id: 13,
+                question: "Cho hàm số $y=f(x)$ xác định và liên tục trên đoạn $[a;b]$. Diện tích hình phẳng giới hạn bởi đồ thị hàm số $y=f(x)$, trục hoành và hai đường thẳng $x=a$, $x=b$ được tính theo công thức",
+                options: [
+                    "A. $S=\\int_{a}^{b}|f(x)|dx.$", 
+                    "B. $S=\\int_{a}^{b}f(x)dx.$", 
+                    "C. $S=-\\int_{a}^{b}f(x)dx.$", 
+                    "D. $S=\\int_{b}^{a}|f(x)|dx.$"
+                ],
+                correct: 0,
+                solution: "Theo lý thuyết, diện tích hình phẳng giới hạn bởi đồ thị $y=f(x)$, trục hoành và 2 đường thẳng $x=a, x=b$ là $S=\\int_{a}^{b}|f(x)|dx$."
+            },
+            {
+                id: 14,
+                question: "Gọi $S$ là diện tích hình phẳng $(H)$ giới hạn bởi các đường $y=f(x)$, trục hoành và hai đường thẳng $x=-1$, $x=2$ (như hình vẽ).<br/>" +
+                    "<div class='w-full flex justify-center mt-4 mb-4'>" +
+                    "<svg width='300' height='200' viewBox='0 0 400 300'>" +
+                    "<defs>" +
+                    "<marker id='arrow' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto-start-reverse'>" +
+                    "<path d='M 0 0 L 10 5 L 0 10 z' fill='black'/>" +
+                    "</marker>" +
+                    "<pattern id='hatch' width='8' height='8' patternTransform='rotate(45 0 0)' patternUnits='userSpaceOnUse'>" +
+                    "<line x1='0' y1='0' x2='0' y2='8' stroke='#f87171' stroke-width='1.5' />" +
+                    "</pattern>" +
+                    "</defs>" +
+                    "<path d='M 150 150 L 150 180 Q 175 150 200 150 Z' fill='url(#hatch)'/>" +
+                    "<path d='M 200 150 Q 225 150 300 50 L 300 150 Z' fill='url(#hatch)'/>" +
+                    "<line x1='20' y1='150' x2='380' y2='150' stroke='black' stroke-width='1.5' marker-end='url(#arrow)'/>" +
+                    "<line x1='200' y1='280' x2='200' y2='20' stroke='black' stroke-width='1.5' marker-end='url(#arrow)'/>" +
+                    "<path d='M 100 240 Q 125 210 150 180 Q 175 150 200 150 T 300 50 Q 320 20 330 0' fill='none' stroke='#16a34a' stroke-width='2'/>" +
+                    "<line x1='150' y1='150' x2='150' y2='180' stroke='black' stroke-width='1'/>" +
+                    "<line x1='300' y1='150' x2='300' y2='50' stroke='black' stroke-width='1'/>" +
+                    "<text x='370' y='140' font-size='16' font-family='serif' font-style='italic'>x</text>" +
+                    "<text x='180' y='30' font-size='16' font-family='serif' font-style='italic'>y</text>" +
+                    "<text x='185' y='165' font-size='16' font-family='serif'>O</text>" +
+                    "<text x='135' y='140' font-size='16' font-family='serif'>-1</text>" +
+                    "<text x='305' y='165' font-size='16' font-family='serif'>2</text>" +
+                    "</svg>" +
+                    "</div>" +
+                    "Đặt $a=\\int_{-1}^{0}f(x)dx,$ $b=\\int_{0}^{2}f(x)dx.$ Mệnh đề nào sau đây đúng?",
+                options: [
+                    "A. $S=b-a.$", 
+                    "B. $S=-b-a.$", 
+                    "C. $S=-b+a.$", 
+                    "D. $S=b+a.$"
+                ],
+                correct: 0,
+                solution: "Dựa vào dấu của đồ thị: $S = \\int_{-1}^{0} |f(x)|dx + \\int_{0}^{2} |f(x)|dx = -\\int_{-1}^{0}f(x)dx + \\int_{0}^{2}f(x)dx = -a + b = b - a$."
+            },
+            {
+                id: 15,
+                question: "Tính diện tích $S$ hình phẳng giới hạn bởi đồ thị hàm số $y=x^2-4$, trục hoành và hai đường thẳng $x=0$, $x=1$.",
+                options: ["A. $S=-\\frac{11}{3}$", "B. $S=\\frac{8}{3}$", "C. $S=\\frac{11}{3}$", "D. $S=\\frac{5}{3}$"],
+                correct: 2,
+                solution: "Trên đoạn $[0;1]$, $x^2-4 < 0$. Suy ra $S = \\int_{0}^{1}|x^2-4|dx = \\int_{0}^{1}(4-x^2)dx = (4x - \\frac{x^3}{3})\\Big|_{0}^{1} = 4 - \\frac{1}{3} = \\frac{11}{3}$."
+            },
+            {
+                id: 16,
+                question: "Hình phẳng giới hạn bởi các đường $y=3-x^2$ và $y=x^2-2x-1$ có diện tích bằng",
+                options: ["A. $6$", "B. $1$", "C. $3$", "D. $9$"],
+                correct: 3,
+                solution: "Phương trình hoành độ giao điểm: $3-x^2 = x^2-2x-1 \\Leftrightarrow 2x^2-2x-4=0 \\Leftrightarrow x=-1, x=2$. Diện tích $S = \\int_{-1}^{2}|-2x^2+2x+4|dx = \\left| \\frac{-2x^3}{3} + x^2 + 4x \\right|_{-1}^{2} = \\left| (\\frac{-16}{3} + 4 + 8) - (\\frac{2}{3} + 1 - 4) \\right| = 9$."
+            },
+            {
+                id: 17,
+                question: "Cho vật thể $(V)$ được giới hạn bởi hai mặt phẳng $x=0$ và $x=3$, thiết diện là hình vuông cạnh $2x$. Thể tích của $(V)$ bằng",
+                options: ["A. $36\\pi$", "B. $36$", "C. $9$", "D. $9\\pi$"],
+                correct: 1,
+                solution: "Diện tích thiết diện: $S(x) = (2x)^2 = 4x^2$. Thể tích $V = \\int_{0}^{3} S(x) dx = \\int_{0}^{3} 4x^2 dx = \\left[ \\frac{4x^3}{3} \\right]_{0}^{3} = 36$."
+            },
+            {
+                id: 18,
+                question: "Trong không gian $Oxyz$, mặt phẳng $(P)$ đi qua $M(-2;1;-1)$ và có VTPT $\\vec{n}=(-3;2;1)$ có phương trình là",
+                options: [
+                    "A. $3x-2y-z+7=0$", 
+                    "B. $-2x+y-z+7=0$", 
+                    "C. $3x-2y-z-7=0$", 
+                    "D. $-2x+2y-z-7=0$"
+                ],
+                correct: 0,
+                solution: "Phương trình: $-3(x+2) + 2(y-1) + 1(z+1) = 0 \\Leftrightarrow -3x - 6 + 2y - 2 + z + 1 = 0 \\Leftrightarrow -3x + 2y + z - 7 = 0 \\Leftrightarrow 3x - 2y - z + 7 = 0$."
+            },
+            {
+                id: 19,
+                question: "Mặt phẳng $(\\alpha)$ đi qua $A(3;-1;-5)$ và vuông góc với hai mặt phẳng $(P): 3x-2y+2z+7=0$ và $(Q): 5x-4y+3z+1=0$ có phương trình là",
+                options: [
+                    "A. $2x+y-2z-15=0$", 
+                    "B. $x+y+z+3=0$", 
+                    "C. $2x+y-2z+15=0$", 
+                    "D. $2x+y-2z-16=0$"
+                ],
+                correct: 0,
+                solution: "VTPT $\\vec{n} = [\\vec{n}_P, \\vec{n}_Q]$. Với $\\vec{n}_P=(3;-2;2)$, $\\vec{n}_Q=(5;-4;3) \\Rightarrow \\vec{n}=(2;1;-2)$. Phương trình: $2(x-3) + 1(y+1) - 2(z+5) = 0 \\Leftrightarrow 2x + y - 2z - 15 = 0$."
+            },
+            {
+                id: 20,
+                question: "Trong không gian $Oxyz$, đường thẳng $d$ đi qua $A(1;-1;0)$ và song song với $\\Delta: \\frac{x-1}{2}=\\frac{y}{-1}=\\frac{z+3}{5}$ có phương trình là",
+                options: [
+                    "A. $\\frac{x-1}{2}=\\frac{y+1}{1}=\\frac{z}{5}$", 
+                    "B. $\\frac{x-1}{-2}=\\frac{y+1}{1}=\\frac{z}{5}$", 
+                    "C. $\\frac{x-3}{2}=\\frac{y+2}{-1}=\\frac{z-5}{5}$", 
+                    "D. $\\frac{x-3}{2}=\\frac{y+2}{-1}=\\frac{z+5}{5}$"
+                ],
+                correct: 2,
+                solution: "$d$ có VTCP $\\vec{u} = (2;-1;5)$ (hoặc cùng phương). Xét đáp án C, VTCP là $(2;-1;5)$, đi qua điểm $M(3; -2; 5)$. Thay toạ độ $A(1; -1; 0)$ vào C: $\\frac{1-3}{2} = \\frac{-1+2}{-1} = \\frac{0-5}{5} = -1$ (thoả mãn). Vậy đáp án C chính xác."
+            }
+        ];
+
+        const part2Data = [
+            {
+                id: 1,
+                question: "Cho hàm số $f(x)=5x^4+4x-2$.",
+                statements: [
+                    { text: "a) $\\int_{0}^{1}f(x)dx=1$", correct: true },
+                    { text: "b) Họ nguyên hàm của $f(x)$ là $F(x)=x^5+2x^2-2x+C$.", correct: true },
+                    { text: "c) Nguyên hàm $F(x)$ của $f(x)$ và thỏa $F(0)=2$ là $F(x)=x^5+2x^2-2x+4$", correct: false },
+                    { text: "d) $F(x)$ là một nguyên hàm của $f(x)$ thỏa $F(1)=4$ thì $F(3)=258$", correct: true }
+                ],
+                solution: "a) ĐÚNG. $\\int_{0}^{1}(5x^4+4x-2)dx = (x^5+2x^2-2x)\\Big|_{0}^{1} = 1+2-2 = 1$.<br/>" +
+                          "b) ĐÚNG. $F(x) = x^5+2x^2-2x+C$.<br/>" +
+                          "c) SAI. $F(0)=2 \\Rightarrow C=2$. Do đó $F(x)=x^5+2x^2-2x+2$ (đề bài cho $+4$).<br/>" +
+                          "d) ĐÚNG. $F(1)=4 \\Rightarrow 1^5+2(1)^2-2(1)+C=4 \\Rightarrow C=3$. Vậy $F(3) = 3^5 + 2(3^2) - 2(3) + 3 = 243 + 18 - 6 + 3 = 258$."
+            },
+            {
+                id: 2,
+                question: "Cho hình phẳng $(S)$ giới hạn bởi đồ thị hàm số $y=f(x)=\\sqrt{25-x^2}$, trục hoành và hai đường thẳng $x=-5$, $x=5$.",
+                statements: [
+                    { text: "a) Đạo hàm của hàm số $f(x)$ bằng $\\frac{x}{\\sqrt{25-x^2}}.$", correct: false },
+                    { text: "b) Diện tích hình phẳng $(S)$ bằng $25\\pi$.", correct: false },
+                    { text: "c) Thể tích của khối tròn xoay khi quay $(S)$ quanh $Ox$ là $\\frac{500}{3}\\pi$", correct: true },
+                    { text: "d) Diện tích hình phẳng giới hạn bởi đồ thị hàm số $y=f(x)$ và đường thẳng $y=3$ bằng $K=2\\int_{0}^{4}\\sqrt{25-x^2}dx-12$", correct: false }
+                ],
+                solution: "a) SAI. $f'(x) = \\frac{-2x}{2\\sqrt{25-x^2}} = \\frac{-x}{\\sqrt{25-x^2}}$. Thiếu dấu trừ.<br/>" +
+                          "b) SAI. Hình phẳng là nửa đường tròn bán kính $R=5$. $S = \\frac{1}{2}\\pi R^2 = 12.5\\pi$.<br/>" +
+                          "c) ĐÚNG. Khối tròn xoay tạo thành là khối cầu bán kính $R=5$. $V = \\frac{4}{3}\\pi R^3 = \\frac{500\\pi}{3}$.<br/>" +
+                          "d) SAI. Hoành độ giao điểm: $\\sqrt{25-x^2}=3 \\Rightarrow x=\\pm4$. $S = \\int_{-4}^{4} (\\sqrt{25-x^2} - 3)dx = 2\\int_{0}^{4}\\sqrt{25-x^2}dx - 2\\int_{0}^{4}3dx = 2\\int_{0}^{4}\\sqrt{25-x^2}dx - 24$. Biểu thức đề bài ra $-12$ là sai."
+            },
+            {
+                id: 3,
+                question: "Trong không gian $Oxyz$, cho điểm $A(1;2;-1)$, đường thẳng $d: \\begin{cases}x=3+t\\\\ y=3+3t\\\\ z=2t\\end{cases}$ và mặt phẳng $(P): x+y-z+3=0$.",
+                statements: [
+                    { text: "a) Một vectơ chỉ phương của đường thẳng $d$ là $\\vec{u}=(1;3;2)$.", correct: true },
+                    { text: "b) Đường thẳng đi qua $A$ và vuông góc với $(P)$ có phương trình chính tắc là $\\frac{x+1}{1}=\\frac{y+2}{1}=\\frac{z-1}{-1}.$", correct: false },
+                    { text: "c) Giả sử $M(a;b;c)$ là giao điểm của đường thẳng $d$ và mặt phẳng $(P)$. Khi đó $a+b+c=21$.", correct: false },
+                    { text: "d) Đường thẳng $(\\Delta)$ đi qua $A$, cắt $d$ tại điểm $B$ và song song với mặt phẳng $(P)$. Độ dài đoạn thẳng $AB=\\sqrt{6}.$", correct: true }
+                ],
+                solution: "a) ĐÚNG. Từ pt tham số ta thấy rõ $\\vec{u}=(1;3;2)$.<br/>" +
+                          "b) SAI. Đường thẳng qua $A(1;2;-1)$ và có VTCP $\\vec{n}_P=(1;1;-1)$ là $\\frac{x-1}{1}=\\frac{y-2}{1}=\\frac{z+1}{-1}$. Pt đề bài đi qua điểm $(-1;-2;1)$, không phải là $A$.<br/>" +
+                          "c) SAI. Thế $d$ vào $(P)$: $(3+t) + (3+3t) - 2t + 3 = 0 \\Rightarrow 2t + 9 = 0 \\Rightarrow t=-4.5$. Tọa độ $M(-1.5; -10.5; -9)$. Tổng $a+b+c = -21$, không phải $21$.<br/>" +
+                          "d) ĐÚNG. Giả sử $B(3+t; 3+3t; 2t) \\in d$. $\\vec{AB}=(2+t; 1+3t; 2t+1)$. Đường thẳng song song $(P)$ nên $\\vec{AB} \\cdot \\vec{n}_P = 0 \\Rightarrow (2+t) + (1+3t) - (2t+1) = 0 \\Rightarrow 2t+2=0 \\Rightarrow t=-1$. Vậy $B(2;0;-2)$, $\\vec{AB}=(1;-2;-1)$. Suy ra $AB = \\sqrt{1^2+(-2)^2+(-1)^2} = \\sqrt{6}$."
+            },
+            {
+                id: 4,
+                question: "Trong không gian $Oxyz$, cho điểm $A(1;2;3)$, $B(2;-3;1)$ và mặt phẳng $(P): 2x-y+2z+5=0$.",
+                statements: [
+                    { text: "a) Một vectơ pháp tuyến của mặt phẳng $(P)$ là $\\vec{n}=(2;-1;2)$.", correct: true },
+                    { text: "b) Khoảng cách từ điểm $A$ đến mặt phẳng $(P)$ bằng $2$.", correct: false },
+                    { text: "c) Phương trình mặt phẳng $(\\alpha)$ đi qua $A$ và song song với mặt phẳng $(P)$ có phương trình là: $2x-y+2z+6=0$.", correct: false },
+                    { text: "d) Giả sử điểm $M(a;b;c)$ thuộc mặt phẳng $(Oxy)$ sao cho $MA+MB$ ngắn nhất. Khi đó tổng $a-b+2c=\\frac{7}{2}$", correct: true }
+                ],
+                solution: "a) ĐÚNG. Hệ số của $x, y, z$ trong pt là $(2; -1; 2)$.<br/>" +
+                          "b) SAI. $d(A,P) = \\frac{|2(1)-2+2(3)+5|}{\\sqrt{2^2+(-1)^2+2^2}} = \\frac{11}{3} \\neq 2$.<br/>" +
+                          "c) SAI. $(\\alpha) \\parallel (P) \\Rightarrow 2x-y+2z+D=0$. Qua $A(1;2;3) \\Rightarrow 2(1)-2+2(3)+D=0 \\Rightarrow D=-6$. Vậy pt là $2x-y+2z-6=0$ (đề bài cho $+6$).<br/>" +
+                          "d) ĐÚNG. Xét vị trí tương đối của $A,B$ đối với $(Oxy)$ (phương trình $z=0$): $z_A=3 > 0, z_B=1 > 0 \\Rightarrow A, B$ nằm cùng phía. Gọi $A'(1; 2; -3)$ là điểm đối xứng của $A$ qua $(Oxy)$. $MA+MB$ nhỏ nhất khi $M = A'B \\cap (Oxy)$. Pt đg thẳng $A'B$: $x=1+t, y=2-5t, z=-3+4t$. Cắt $z=0 \\Rightarrow t=3/4$. Suy ra $M(7/4; -7/4; 0)$. Vậy $a-b+2c = 7/4 - (-7/4) + 0 = 7/2$."
+            }
+        ];
+
+        const part3Data = [
+            {
+                id: 1,
+                question: "Một chiếc cốc chứa nước ở $95^{\\circ}C$ được đặt trong phòng có nhiệt độ $20^{\\circ}C$. Tốc độ giảm nhiệt độ của nước trong cốc tại thời điểm $t$ phút được xác định bởi $T^{\\prime}(t)=-\\frac{3}{2}e^{-\\frac{t}{50}}$ $(^{\\circ}C/\\text{phút})$. Nhiệt độ của nước tại thời điểm $t=20$ phút bằng bao nhiêu độ C? (Kết quả làm tròn đến hàng phần chục).",
+                answer: "70.3",
+                solution: "Hàm nhiệt độ là nguyên hàm của $T'(t)$. Ta có $T(t) = \\int -\\frac{3}{2}e^{-t/50} dt = 75e^{-t/50} + C$.<br/>Tại $t=0, T(0) = 95 \\Rightarrow 75(1) + C = 95 \\Rightarrow C = 20$. Vậy $T(t) = 75e^{-t/50} + 20$.<br/>Tại $t=20$: $T(20) = 75e^{-0.4} + 20 \\approx 75(0.6703) + 20 \\approx 50.27 + 20 = 70.27 \\approx 70.3^{\\circ}C$."
+            },
+            {
+                id: 2,
+                question: "Lô gô gắn tại các Showroom của hãng ô tô VINFAST là một hình tròn như hình vẽ bên. Phần tô đậm nằm giữa parabol đỉnh $I$ và đường gấp khúc $AJB$ được dát bạc với chi phí $10$ triệu đồng/m$^2$. Phần còn lại được phủ sơn với chi phí $2$ triệu đồng/m$^2$. Biết $AB=2\\text{m}$, $IA=IB=\\sqrt{5}\\text{m}$ và $JA=JB=\\frac{\\sqrt{13}}{2}\\text{m}$. Tính tổng tiền để dát bạc và phủ sơn của lô gô nói trên? (làm tròn đến hàng phần chục)" +
+                    "<div class='w-full flex justify-center mt-4 mb-4'>" +
+                    "<svg width='250' height='250' viewBox='0 0 300 300'>" +
+                    "<circle cx='150' cy='160' r='100' stroke='#ef4444' stroke-width='2' fill='none'/>" +
+                    "<path d='M 70 100 L 150 220 L 230 100 Q 150 420 70 100 Z' fill='#a855f7' />" +
+                    "<polyline points='70,100 150,220 230,100' stroke='#16a34a' stroke-width='2' fill='none'/>" +
+                    "<line x1='150' y1='220' x2='150' y2='260' stroke='black' stroke-width='2'/>" +
+                    "<circle cx='70' cy='100' r='3' fill='black'/>" +
+                    "<circle cx='230' cy='100' r='3' fill='black'/>" +
+                    "<circle cx='150' cy='220' r='3' fill='black'/>" +
+                    "<circle cx='150' cy='260' r='3' fill='black'/>" +
+                    "<text x='150' y='85' font-family='serif' font-weight='bold' font-size='28' text-anchor='middle' fill='black'>VINFAST</text>" +
+                    "<text x='55' y='95' font-size='16' font-family='sans-serif'>A</text>" +
+                    "<text x='235' y='95' font-size='16' font-family='sans-serif'>B</text>" +
+                    "<text x='135' y='215' font-size='16' font-family='sans-serif'>J</text>" +
+                    "<text x='150' y='280' font-size='16' font-family='sans-serif' text-anchor='middle'>I</text>" +
+                    "</svg>" +
+                    "</div>",
+                answer: "19.2",
+                solution: "Chọn hệ toạ độ $O$ là trung điểm $AB$. Ta có $A(-1;0), B(1;0)$.<br/>Từ $IA=\\sqrt{5} \\Rightarrow I(0;-2)$. Từ $JA=\\frac{\\sqrt{13}}{2} \\Rightarrow J(0;-1.5)$.<br/>Phương trình parabol qua $A, B$ đỉnh $I$: $y = 2x^2 - 2$.<br/>Diện tích tam giác $AJB$: $S_{\\Delta} = \\frac{1}{2} \\times 2 \\times 1.5 = 1.5 \\text{m}^2$.<br/>Diện tích phần nằm dưới trục hoành giới hạn bởi Parabol: $\\int_{-1}^{1}|2x^2-2|dx = \\frac{8}{3} \\text{m}^2$.<br/>Diện tích phần dát bạc ($S_1$): $S_1 = \\frac{8}{3} - 1.5 = \\frac{7}{6} \\text{m}^2$.<br/>Hình tròn đi qua $A(-1;0), B(1;0), I(0;-2)$ có tâm $(0;-0.75)$ và bán kính $R=1.25$. Diện tích hình tròn $S_{tr} = \\pi(1.25)^2 = 1.5625\\pi \\text{m}^2$.<br/>Diện tích sơn ($S_2$) = $1.5625\\pi - \\frac{7}{6}$.<br/>Tổng tiền = $10 \\times \\frac{7}{6} + 2 \\times (1.5625\\pi - \\frac{7}{6}) = \\frac{28}{3} + 3.125\\pi \\approx 19.15 \\approx 19.2$ triệu đồng."
+            },
+            {
+                id: 3,
+                question: "Trong không gian $Oxyz$, cho hai điểm $A(1;3;0)$, $B(3;1;0)$ và mặt phẳng $(P): x-y+z+5=0$. Mặt phẳng $(Q)$ song song với mặt phẳng $(P)$ và cách đều hai điểm $A, B$ có dạng $x+by+cz+d=0$. Tính $b+c+d$.",
+                answer: "0",
+                solution: "$(Q) \\parallel (P) \\Rightarrow (Q): x - y + z + d = 0$. Suy ra $b=-1, c=1$.<br/>Để cách đều $A, B$, mặt phẳng $(Q)$ phải đi qua trung điểm $M(2;2;0)$ của $AB$ (do $\\vec{AB}=(2;-2;0)$ không song song với $(P)$).<br/>Thay $M(2;2;0)$ vào $(Q)$: $2 - 2 + 0 + d = 0 \\Rightarrow d=0$.<br/>Vậy $b+c+d = -1 + 1 + 0 = 0$."
+            },
+            {
+                id: 4,
+                question: "Một phần mềm mô phỏng vận động viên tập bắn bia mục tiêu. Trục $d$ của nòng súng và cọc đỡ bia $d^{\\prime}$ lần lượt có pt $d: \\begin{cases}x=t\\\\ y=2\\\\ z=4\\end{cases}$ và $d^{\\prime}: \\begin{cases}x=1\\\\ y=2\\end{cases}$ (với $z$ là tham số). Để bắn trúng hồng tâm thì vận động viên phải ngắm bắn vào điểm $N(a;b;c) \\in d^{\\prime}$ và cách giao điểm của $d$ và $d^{\\prime}$ một khoảng $6$. Khi $c<0$, tính giá trị biểu thức $a-b+c$.",
+                answer: "-3",
+                solution: "Giao điểm $I$ của $d$ và $d'$: Xét $x=1 \\Rightarrow t=1 \\Rightarrow y=2, z=4$. Vậy $I(1;2;4)$.<br/>Điểm $N \\in d'$ có toạ độ $N(1; 2; c)$. Khoảng cách $IN = 6 \\Rightarrow \\sqrt{(1-1)^2 + (2-2)^2 + (c-4)^2} = 6 \\Rightarrow |c-4|=6$.<br/>Do $c<0$ nên $c-4 = -6 \\Rightarrow c=-2$.<br/>Vậy $N(1;2;-2) \\Rightarrow a=1, b=2, c=-2$.<br/>Biểu thức $a-b+c = 1 - 2 + (-2) = -3$."
+            }
+        ];
+
+        const App = () => {
+            const [answersP1, setAnswersP1] = useState({});
+            const [answersP2, setAnswersP2] = useState({});
+            const [answersP3, setAnswersP3] = useState({});
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [score, setScore] = useState(0);
+	    const WEB_APP_URL = 'DÁN_LINK_WEB_APP_Ở_BƯỚC_2_CỦA_BẠN_VÀO_ĐÂY'; // Nhớ để trong dấu nháy đơn
+            const [username, setUsername] = useState('');
+            const [history, setHistory] = useState(null);
+            const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+            const [isSaving, setIsSaving] = useState(false);
+
+// --- BẮT ĐẦU DÁN THÊM TỪ ĐÂY ---
+            const fetchHistory = () => {
+                if (!username.trim()) {
+                    alert("Vui lòng nhập Tên hoặc Mã HS để xem lịch sử!");
+                    return;
+                }
+                setIsLoadingHistory(true);
+                fetch(WEB_APP_URL + "?username=" + encodeURIComponent(username))
+                .then(response => response.json())
+                .then(data => {
+                    setHistory(data);
+                    setIsLoadingHistory(false);
+                })
+                .catch(error => {
+                    console.error('Lỗi tải lịch sử:', error);
+                    setIsLoadingHistory(false);
+                    alert("Có lỗi xảy ra khi tải lịch sử. Vui lòng kiểm tra lại link Web App.");
+                });
+            };
+
+            const saveResult = (finalScore, wrongAnswersStr) => {
+                setIsSaving(true);
+                fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    redirect: "follow",
+                    body: JSON.stringify({
+                        username: username,
+                        score: finalScore,
+                        wrongAnswers: wrongAnswersStr || "Không sai câu nào"
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    setIsSaving(false);
+                    fetchHistory(); // Tải lại lịch sử cho mới
+                })
+                .catch(error => {
+                    console.error('Lỗi lưu điểm:', error);
+                    setIsSaving(false);
+                });
+            };
+            // --- KẾT THÚC DÁN ---
+            useEffect(() => {
+                if (isSubmitted && window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
+                    window.MathJax.typesetPromise().catch(err => console.error(err));
+                }
+            }, [isSubmitted]);
+
+            const handleP1Change = (qId, optionIndex) => {
+                if(isSubmitted) return;
+                setAnswersP1(prev => ({ ...prev, [qId]: optionIndex }));
+            };
+
+            const handleP2Change = (qId, stmtIndex, value) => {
+                if(isSubmitted) return;
+                setAnswersP2(prev => ({
+                    ...prev,
+                    [qId]: { ...(prev[qId] || {}), [stmtIndex]: value }
+                }));
+            };
+
+            const handleP3Change = (qId, value) => {
+                if(isSubmitted) return;
+                setAnswersP3(prev => ({ ...prev, [qId]: value }));
+            };
+const calculateScore = () => {
+                if (!username.trim()) {
+                    alert("Vui lòng nhập Tên/Mã Học Sinh ở phần đầu trang trước khi nộp bài!");
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    return;
+                }
+
+                let s = 0;
+                let wrongQuestions = []; // Mảng lưu các câu sai
+
+                // Chấm Phần 1
+                part1Data.forEach((q, idx) => {
+                    if (answersP1[q.id] === q.correct) {
+                        s += 0.2;
+                    } else {
+                        wrongQuestions.push(`P1-C${idx + 1}`);
+                    }
+                });
+
+                // Chấm Phần 2
+                part2Data.forEach((q, idx) => {
+                    const ans = answersP2[q.id] || {};
+                    let wrongCount = 0;
+                    q.statements.forEach((stmt, stmtIdx) => {
+                        if (ans[stmtIdx] !== undefined) {
+                            if (ans[stmtIdx] !== stmt.correct) wrongCount++;
+                        } else {
+                            wrongCount++; 
+                        }
+                    });
+                    if (wrongCount === 0) s += 1;
+                    else if (wrongCount === 1) s += 0.5;
+                    else if (wrongCount === 2) s += 0.25;
+                    else if (wrongCount === 3) s += 0.1;
+
+                    if (wrongCount > 0) wrongQuestions.push(`P2-C${idx + 1}(sai ${wrongCount} ý)`);
+                });
+
+                // Chấm Phần 3
+                part3Data.forEach((q, idx) => {
+                    const userAns = (answersP3[q.id] || '').trim().replace(',', '.');
+                    if (userAns === q.answer) {
+                        s += 0.5;
+                    } else {
+                        wrongQuestions.push(`P3-C${idx + 1}`);
+                    }
+                });
+
+                setScore(s);
+                setIsSubmitted(true);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                // Gửi dữ liệu lên Google Sheets
+                saveResult(s, wrongQuestions.join(', '));
+            };
+            const MathText = ({ content }) => {
+                const divRef = React.useRef(null);
+                useEffect(() => {
+                    if (window.MathJax && typeof window.MathJax.typesetPromise === 'function' && divRef.current) {
+                        window.MathJax.typesetPromise([divRef.current]).catch(err => console.error(err));
+                    }
+                }, [content]);
+                return <div ref={divRef} dangerouslySetInnerHTML={{ __html: content }} />;
+            };
+
+            return (
+	{/* KHUNG NHẬP TÊN VÀ LỊCH SỬ */}
+                    <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+                        <h2 className="text-xl font-bold border-b-2 border-blue-600 pb-2 mb-4 text-blue-800">Thông tin học sinh</h2>
+                        <div className="flex flex-col sm:flex-row gap-4 items-center">
+                            <input 
+                                type="text" 
+                                placeholder="Nhập Họ Tên hoặc Mã HS của bạn..." 
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                disabled={isSubmitted}
+                                className="border rounded-lg p-2 w-full sm:w-1/2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            />
+                            <button 
+                                onClick={fetchHistory}
+                                disabled={isLoadingHistory}
+                                className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-lg transition"
+                            >
+                                {isLoadingHistory ? 'Đang tải...' : 'Xem lịch sử làm bài'}
+                            </button>
+                        </div>
+
+                        {history && (
+                            <div className="mt-4 p-4 bg-gray-50 border rounded-lg">
+                                {history.length === 0 ? (
+                                    <p className="text-gray-600">Bạn chưa làm bài lần nào trên hệ thống.</p>
+                                ) : (
+                                    <div>
+                                        <p className="font-bold text-green-700 mb-2">Bạn đã làm bài {history.length} lần:</p>
+                                        <ul className="list-disc pl-5 space-y-1 text-sm">
+                                            {history.map((lan, i) => (
+                                                <li key={i}>
+                                                    Lần {i + 1} ({new Date(lan.time).toLocaleString('vi-VN')}): 
+                                                    <span className="font-bold text-red-600 ml-1">{lan.score} điểm</span> 
+                                                    <span className="text-gray-500 ml-2">(Sai: {lan.wrong})</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                <React.Fragment>
+                <div className="max-w-4xl mx-auto p-4 md:p-6 mb-24">
+                    <div className="text-center mb-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
+                        <h1 className="text-3xl font-bold text-blue-800 uppercase">Đề Kiểm Tra Giữa Học Kỳ 2</h1>
+                        <p className="text-lg text-gray-700 font-semibold mt-2">Môn: Toán 12 - Đề Số 1</p>
+                    </div>
+
+                    {isSubmitted && (
+                        <div className="bg-green-100 border-l-4 border-green-500 text-green-800 p-4 mb-8 rounded shadow">
+                            <h2 className="text-2xl font-bold">Điểm của bạn: <span className="text-3xl">{score.toFixed(2)}</span> / 10</h2>
+                            <p>Hãy xem chi tiết lời giải ở bên dưới.</p>
+                        </div>
+                    )}
+
+                    {/* PHẦN 1 */}
+                    <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+                        <h2 className="text-xl font-bold border-b-2 border-blue-600 pb-2 mb-4 text-blue-800">PHẦN I. Câu trắc nghiệm (0.2 điểm / câu đúng)</h2>
+                        {part1Data.map((q, idx) => (
+                            <div key={q.id} className="mb-8 border-b pb-4 last:border-0">
+                                <div className="font-semibold text-lg mb-2">Câu {idx + 1}: <MathText content={q.question} /></div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    {q.options.map((opt, optIdx) => {
+                                        const isChecked = answersP1[q.id] === optIdx;
+                                        let textClass = "";
+                                        if (isSubmitted) {
+                                            if (optIdx === q.correct) textClass = "correct-text";
+                                            else if (isChecked && optIdx !== q.correct) textClass = "wrong-text";
+                                        }
+
+                                        return (
+                                            <label key={optIdx} className={`flex items-center p-3 rounded border cursor-pointer transition ${isChecked ? 'bg-blue-50 border-blue-400' : 'hover:bg-gray-50'}`}>
+                                                <input 
+                                                    type="radio" 
+                                                    name={`p1-q${q.id}`} 
+                                                    checked={isChecked}
+                                                    onChange={() => handleP1Change(q.id, optIdx)}
+                                                    disabled={isSubmitted}
+                                                    className="w-4 h-4 text-blue-600"
+                                                />
+                                                <span className={`ml-3 ${textClass}`}><MathText content={opt} /></span>
+                                            </label>
+                                        );
+                                    })}
+                                </div>
+                                {isSubmitted && (
+                                    <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded text-gray-800 text-sm">
+                                        <strong>Lời giải:</strong> <MathText content={q.solution} />
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* PHẦN 2 */}
+                    <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+                        <h2 className="text-xl font-bold border-b-2 border-blue-600 pb-2 mb-4 text-blue-800">PHẦN II. Câu trắc nghiệm đúng sai (Tối đa 1đ / câu)</h2>
+                        <p className="text-sm text-gray-500 mb-6 italic">Đúng 4 ý: 1đ, Sai 1 ý: 0.5đ, Sai 2 ý: 0.25đ, Sai 3 ý: 0.1đ, Sai 4 ý: 0đ.</p>
+                        {part2Data.map((q, idx) => (
+                            <div key={q.id} className="mb-8 border-b pb-4 last:border-0">
+                                <div className="font-semibold text-lg mb-4">Câu {idx + 1}: <MathText content={q.question} /></div>
+                                <div className="space-y-3 mt-4">
+                                    {q.statements.map((stmt, stmtIdx) => {
+                                        const val = answersP2[q.id]?.[stmtIdx];
+                                        let stmtClass = "";
+                                        if (isSubmitted) {
+                                            if (stmt.correct) stmtClass = "correct-text";
+                                        }
+
+                                        return (
+                                            <div key={stmtIdx} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded border bg-gray-50 hover:bg-gray-100 transition">
+                                                <div className={`sm:w-3/4 mb-2 sm:mb-0 ${stmtClass}`}><MathText content={stmt.text} /></div>
+                                                <div className="flex gap-4 font-semibold shrink-0">
+                                                    <label className="flex items-center cursor-pointer">
+                                                        <input type="radio" checked={val === true} onChange={() => handleP2Change(q.id, stmtIdx, true)} disabled={isSubmitted} className="mr-2 text-blue-600 focus:ring-blue-500" /> Đúng
+                                                    </label>
+                                                    <label className="flex items-center cursor-pointer">
+                                                        <input type="radio" checked={val === false} onChange={() => handleP2Change(q.id, stmtIdx, false)} disabled={isSubmitted} className="mr-2 text-red-600 focus:ring-red-500" /> Sai
+                                                    </label>
+                                                </div>
+                                                {isSubmitted && (
+                                                    <div className="mt-2 sm:mt-0 sm:ml-4 text-sm font-bold flex-shrink-0">
+                                                        {val === stmt.correct ? <span className="text-green-600 px-2 py-1 bg-green-100 rounded">✓ Đạt</span> : <span className="text-red-600 px-2 py-1 bg-red-100 rounded">✗ Lỗi</span>}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                                {isSubmitted && (
+                                    <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded text-gray-800 text-sm">
+                                        <strong>Lời giải:</strong> <MathText content={q.solution} />
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* PHẦN 3 */}
+                    <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+                        <h2 className="text-xl font-bold border-b-2 border-blue-600 pb-2 mb-4 text-blue-800">PHẦN III. Câu trắc nghiệm trả lời ngắn (0.5 điểm / câu)</h2>
+                        <p className="text-sm text-gray-500 mb-6 italic">Ghi chú: Nếu kết quả là số thập phân, sử dụng dấu phẩy hoặc dấu chấm (VD: 70,3 hoặc 70.3).</p>
+                        {part3Data.map((q, idx) => {
+                            const userAns = answersP3[q.id] || '';
+                            let isCorrect = false;
+                            if (isSubmitted) {
+                                isCorrect = userAns.trim().replace(',', '.') === q.answer;
+                            }
+                            return (
+                                <div key={q.id} className="mb-6 border-b pb-4 last:border-0">
+                                    <div className="font-semibold text-lg mb-4">Câu {idx + 1}: <MathText content={q.question} /></div>
+                                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-3">
+                                        <span className="font-semibold whitespace-nowrap">Đáp án của bạn:</span>
+                                        <input 
+                                            type="text" 
+                                            value={userAns} 
+                                            onChange={(e) => handleP3Change(q.id, e.target.value)}
+                                            disabled={isSubmitted}
+                                            placeholder="Nhập số..."
+                                            className={`border rounded-lg p-2 w-full sm:w-40 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm transition ${isSubmitted && (isCorrect ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50')}`}
+                                        />
+                                        {isSubmitted && (
+                                            isCorrect ? <span className="text-green-600 font-bold">✓ Chính xác</span> : <span className="text-red-600 font-bold">✗ Sai (Đ.A đúng: {q.answer.replace('.', ',')})</span>
+                                        )}
+                                    </div>
+                                    {isSubmitted && (
+                                        <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded text-gray-800 text-sm">
+                                            <strong>Lời giải:</strong> <MathText content={q.solution} />
+                                        </div>
+                                    )}
+                                </div>
+                            )
+                        })}
+                    </div>
+
+                </div>
+
+                {/* Footer Bar */}
+                <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] flex justify-center z-50">
+                    {!isSubmitted ? (
+                        <button 
+                            onClick={calculateScore} 
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-10 rounded-full shadow-lg transition transform hover:scale-105"
+                        >
+                            KẾT THÚC VÀ NỘP BÀI
+                        </button>
+                    ) : (
+                        <button 
+                            onClick={() => window.location.reload()} 
+                            className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-10 rounded-full shadow-lg transition transform hover:scale-105"
+                        >
+                            LÀM LẠI TỪ ĐẦU
+                        </button>
+                    )}
+                </div>
+                </React.Fragment>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
